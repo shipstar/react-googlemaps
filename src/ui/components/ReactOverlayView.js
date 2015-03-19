@@ -69,7 +69,9 @@ var ReactOverlayView = React.createClass({
 
   componentDidUpdate: function(prevProps) {
     this.__node.props = this.props;
-    this.__node.draw();
+    if (this.__node._containerElement) {
+      this.__node.draw();
+    }
 
     if (this.props.mapPane != prevProps.mapPane) {
       // Unmount then, mount again onto the correct map pane
