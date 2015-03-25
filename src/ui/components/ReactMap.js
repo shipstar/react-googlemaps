@@ -16,6 +16,8 @@ var MapLifeCycle = keyMirror({
   CREATING_MAP: null
 });
 
+var fitOnce = true;
+
 var ReactMap = React.createClass({
   propTypes: {
     zoom: PropTypeUtils.or('initialZoom', React.PropTypes.number).isRequired,
@@ -40,6 +42,23 @@ var ReactMap = React.createClass({
   componentDidUpdate: function() {
     if (this.state.mapLifeCycleState === MapLifeCycle.CREATING_MAP) {
       this.setState({mapLifeCycleState: null});
+    }
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    if (!(this.props.bounds && nextProps.bounds)) { return; }
+
+    var boundsEqual = function (oldProps, newProps) {
+      return oldProps.bounds.getSouthWest().lat() === newProps.bounds.getSouthWest().lat() &&
+             oldProps.bounds.getSouthWest().lng() === newProps.bounds.getSouthWest().lng() &&
+             oldProps.bounds.getNorthEast().lat() === newProps.bounds.getNorthEast().lat() &&
+             oldProps.bounds.getNorthEast().lng() === newProps.bounds.getNorthEast().lng()
+    };
+
+    if (!this.state.mapLifeCycleState && this.refs.map.__node && (!boundsEqual(this.props, nextProps) || fitOnce)) {
+      this.refs.map.__node.fitBounds(nextProps.bounds)
+      fitOnce = false;
+      this.forceUpdate()
     }
   },
 
