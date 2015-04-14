@@ -47,6 +47,7 @@ var ReactMap = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     if (!(this.props.bounds && nextProps.bounds)) { return; }
+    if (this.props.bounds.isEmpty() || nextProps.bounds.isEmpty()) { return; }
 
     var boundsEqual = function (oldProps, newProps) {
       return oldProps.bounds.getSouthWest().lat() === newProps.bounds.getSouthWest().lat() &&
